@@ -4,9 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 
 @RestController
 public class QuizController {
@@ -18,7 +20,7 @@ public class QuizController {
     }
 
     @PostMapping(value = "/api/quizzes", consumes = "application/json")
-    public @ResponseBody Quiz createQuiz(@RequestBody QuizRequest quizRequest) {
+    public @ResponseBody Quiz createQuiz(@Valid @RequestBody QuizRequest quizRequest) {
         Quiz quiz = new Quiz(
             idGenerator++,
             quizRequest.title,
@@ -36,7 +38,7 @@ public class QuizController {
             return quizzes.get(id);
         }
         throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "entity not found"
+                HttpStatus.NOT_FOUND, "entity not found."
         );
     }
 
@@ -45,11 +47,16 @@ public class QuizController {
         return quizzes.values();
     }
 
-    @PostMapping(value = "/api/quizzes/{id}/solve")
-    public @ResponseBody Answer solveQuiz(@PathVariable int id, int answer) {
+    @PostMapping(value = "/api/quizzes/{id}/solve", consumes = "application/json")
+    public @ResponseBody Answer solveQuiz(@PathVariable int id, @RequestBody AnswerRequest answer) {
+        if (!quizzes.containsKey(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "entity not found."
+            );
+        }
         var quiz = quizzes.get(id);
         Answer answerResponse = new Answer();
-        if (answer == quiz.answer) {
+        if (Arrays.equals(answer.answer, quiz.answer)) {
             answerResponse.success = true;
             answerResponse.feedback = "Congratulations, you're right!";
         } else {
