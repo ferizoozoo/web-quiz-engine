@@ -2,36 +2,57 @@ package com.ferizoozoo.webQuizEngine;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Quiz {
-    public int id;
-    public String title;
-    public String text;
-    public String[] options;
-    @JsonIgnore
-    public int answer;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-    Quiz(int id, String title, String text, String[] options, int answer) {
-        this.id = id;
-        this.title = title;
-        this.text = text;
-        this.options = options;
-        this.answer = answer;
+@Entity
+public class Quiz {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+    private String title;
+    private String text;
+    private String[] options;
+    @JsonIgnore
+    public int[] answer;
+
+    public Quiz() {
+
     }
+
+    public Quiz(String title, String text, String[] options, int[] answer) {
+        this.setTitle(title);
+        this.setText(text);
+        this.setOptions(options);
+        this.setAnswer(answer);
+    }
+
+    public int getId() { return this.id; }
 
     public String getTitle() {
         return this.title;
     }
 
+    public void setTitle(String title) { this.title = title; }
+
     public String getText() {
         return this.text;
     }
+
+    public void setText(String text) { this.text = text; }
 
     public String[] getOptions() {
         return this.options;
     }
 
-    public int getAnswer() {
+    public void setOptions(String[] options) { this.options = options; }
+
+    public int[] getAnswer() {
         return this.answer;
     }
+
+    public void setAnswer(int[] answer) { this.answer = answer; }
 }
 
