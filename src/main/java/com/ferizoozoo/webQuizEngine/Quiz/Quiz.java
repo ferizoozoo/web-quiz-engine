@@ -1,4 +1,4 @@
-package com.ferizoozoo.webQuizEngine;
+package com.ferizoozoo.webQuizEngine.Quiz;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

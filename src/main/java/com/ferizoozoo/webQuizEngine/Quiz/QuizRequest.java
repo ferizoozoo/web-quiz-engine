@@ -1,4 +1,4 @@
-package com.ferizoozoo.webQuizEngine;
+package com.ferizoozoo.webQuizEngine.Quiz;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

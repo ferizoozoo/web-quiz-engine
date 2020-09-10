@@ -1,4 +1,4 @@
-package com.ferizoozoo.webQuizEngine;
+package com.ferizoozoo.webQuizEngine.Quiz;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
