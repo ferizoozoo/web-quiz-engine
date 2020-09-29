@@ -1,11 +1,9 @@
 package com.ferizoozoo.webQuizEngine.Quiz;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import engine.User.User;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Quiz {
@@ -17,6 +15,10 @@ public class Quiz {
     private String[] options;
     @JsonIgnore
     public int[] answer;
+    @ManyToOne
+    @JoinColumn(name = "UserId")
+    @JsonIgnore
+    private User user;
 
     public Quiz() {
 
@@ -54,5 +56,9 @@ public class Quiz {
     }
 
     public void setAnswer(int[] answer) { this.answer = answer; }
+
+    public User getUser() { return this.user; }
+
+    public void setUser(User user) { this.user = user; }
 }
 

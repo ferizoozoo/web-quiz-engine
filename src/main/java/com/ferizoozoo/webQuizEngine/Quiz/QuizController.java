@@ -1,7 +1,11 @@
 package com.ferizoozoo.webQuizEngine.Quiz;
 
+import engine.User.User;
+import engine.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,6 +19,9 @@ public class QuizController {
     @Autowired
     private QuizRepository quizRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping(value = "/quizzes")
     public @ResponseBody Collection<Quiz> getAllQuizzes() {
         return quizRepository.findAll();
@@ -22,11 +29,10 @@ public class QuizController {
 
     @GetMapping(value = "/quizzes/{id}")
     public @ResponseBody Quiz getQuiz(@PathVariable int id) {
-        Quiz quiz = quizRepository.findById(id)
+         return quizRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "No quiz with id: " + id
                 ));
-        return quiz;
     }
 
     @PostMapping(value = "/quizzes", consumes = "application/json")
@@ -37,6 +43,8 @@ public class QuizController {
                 quizRequest.options,
                 quizRequest.answer
         );
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        quiz.setUser(user);
         quizRepository.save(quiz);
         return quiz;
     }
@@ -56,6 +64,23 @@ public class QuizController {
             answerResponse.feedback = "Wrong answer! Please, try again.";
         }
         return answerResponse;
+    }
+
+    @DeleteMapping(value = "/quizzes/{id}")
+    public @ResponseBody ResponseEntity<?> deletePost(@PathVariable int id) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Quiz quiz = quizRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No quiz with id: " + id
+                ));
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No user found.");
+        }
+        if (quiz.getUser().getId() != user.getId()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        quizRepository.delete(quiz);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
 
